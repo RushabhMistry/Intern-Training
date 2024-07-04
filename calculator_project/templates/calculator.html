@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .calculator-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 22px);
+        }
+        select {
+            width: 100%;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        p {
+            text-align: center;
+        }
+        .login-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function toggleSecondInput(operation) {
+            var secondInput = document.getElementById('number2');
+            if (operation === 'sqrt') {
+                secondInput.disabled = true;
+                secondInput.value = '';
+            } else {
+                secondInput.disabled = false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Calculator</h1>
+        {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="number" name="number1" placeholder="Enter first number" step="any">
+                <select name="operation" onchange="toggleSecondInput(this.value)" required>
+                    <option value="add">Addition (+)</option>
+                    <option value="subtract">Subtraction (-)</option>
+                    <option value="multiply">Multiplication (*)</option>
+                    <option value="divide">Division (/)</option>
+                    <option value="modulus">Modulus (%)</option>
+                    <option value="power">Power (^)</option>
+                    <option value="sqrt">Square Root (√)</option>
+                    <option value="percent">Percentage (%)</option>
+                </select>
+                <input type="number" id="number2" name="number2" placeholder="Enter second number" step="any">
+                <button type="submit">Calculate</button>
+            </form>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <p>You are not logged in. <a href="{% url 'login' %}" class="login-link">Login</a></p>
+        {% endif %}
+        {% if result is not None %}
+            <div class="result">
+                <h2>Result: {{ result }}</h2>
+            </div>
+        {% endif %}
+        {% if error is not None %}
+            <div class="error">
+                <h2>{{ error }}</h2>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
